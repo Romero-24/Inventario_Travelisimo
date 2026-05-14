@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Travelisimo — Inventario de Productos</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: #F5F5F0; color: #1a1a1a; min-height: 100vh; }
+
+  .page { max-width: 780px; margin: 0 auto; padding: 1.5rem 1rem; }
+
+  .header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.5rem; gap: 12px; flex-wrap: wrap; }
+  .header-left { display: flex; flex-direction: column; gap: 2px; }
+  .logo { font-size: 11px; font-weight: 700; color: #1565C0; letter-spacing: 1.5px; text-transform: uppercase; }
+  .title { font-size: 20px; font-weight: 600; color: #1a1a1a; }
+  .subtitle { font-size: 12px; color: #888; margin-top: 2px; }
+
+  select {
+    font-size: 13px; padding: 9px 36px 9px 14px;
+    border-radius: 8px; border: 0.5px solid #D0D0D0;
+    background: #fff; color: #1a1a1a; cursor: pointer;
+    width: 100%; max-width: 260px; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  select:focus { outline: none; border-color: #1565C0; }
+
+  .metrics { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 1.5rem; }
+  .metric { background: #fff; border: 0.5px solid #E8E8E8; border-radius: 10px; padding: 14px 16px; }
+  .metric-val { font-size: 26px; font-weight: 600; line-height: 1; }
+  .metric-lbl { font-size: 11px; color: #888; margin-top: 5px; }
+
+  .legend { display: flex; gap: 14px; margin-bottom: 1rem; flex-wrap: wrap; }
+  .leg { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #666; }
+  .leg-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  .cats { display: flex; flex-direction: column; gap: 10px; }
+
+  .cat-card { background: #fff; border: 0.5px solid #E8E8E8; border-radius: 12px; padding: 14px 16px; transition: opacity 0.2s; }
+  .cat-card.empty { opacity: 0.45; }
+
+  .cat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .cat-name { font-size: 13px; font-weight: 600; color: #1a1a1a; display: flex; align-items: center; gap: 7px; }
+  .cat-icon { font-size: 16px; }
+  .cat-total { font-size: 11px; color: #aaa; white-space: nowrap; }
+
+  .bar-wrap { width: 100%; height: 22px; background: #F0F0F0; border-radius: 5px; overflow: hidden; display: flex; margin-bottom: 10px; }
+  .seg { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; overflow: hidden; white-space: nowrap; transition: width 0.4s ease; }
+  .seg-active  { background: #27500A; color: #EAF3DE; }
+  .seg-pending { background: #BA7517; color: #FAEEDA; }
+
+  .badges { display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 6px; }
+  .b-active  { background: #EAF3DE; color: #27500A; }
+  .b-pending { background: #FAEEDA; color: #BA7517; }
+  .b-zero    { background: #F5F5F5; color: #aaa; }
+
+  .footer { margin-top: 2rem; text-align: center; font-size: 11px; color: #bbb; padding-bottom: 1rem; }
+
+  @media (max-width: 600px) {
+    .page { padding: 1rem 0.875rem; }
+    .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+    select { max-width: 100%; }
+    .metrics { grid-template-columns: repeat(3,1fr); gap: 8px; }
+    .metric { padding: 12px 10px; }
+    .metric-val { font-size: 22px; }
+    .metric-lbl { font-size: 10px; }
+    .title { font-size: 18px; }
+    .cat-name { font-size: 12px; }
+  }
+
+  @media (max-width: 380px) {
+    .metrics { grid-template-columns: repeat(3,1fr); gap: 6px; }
+    .metric-val { font-size: 20px; }
+    .metric { padding: 10px 8px; }
+    .cat-card { padding: 12px 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-left">
+      <span class="logo">Travelisimo</span>
+      <div class="title">Inventario de productos</div>
+      <div class="subtitle">El Salvador — Mayo 2026</div>
+    </div>
+    <select id="dept-select" onchange="render()">
+      <option value="all">Todos los departamentos</option>
+      <option value="La Libertad">La Libertad</option>
+      <option value="San Salvador">San Salvador</option>
+      <option value="Santa Ana">Santa Ana</option>
+      <option value="Sonsonate">Sonsonate</option>
+      <option value="Ahuachapán">Ahuachapán</option>
+      <option value="La Paz">La Paz</option>
+      <option value="Chalatenango">Chalatenango</option>
+      <option value="San Miguel">San Miguel</option>
+      <option value="Usulután">Usulután</option>
+      <option value="La Unión">La Unión</option>
+      <option value="Cuscatlán">Cuscatlán</option>
+      <option value="San Vicente">San Vicente</option>
+    </select>
+  </div>
+
+  <div class="metrics">
+    <div class="metric"><div class="metric-val" id="m-total" style="color:#1a1a1a;">0</div><div class="metric-lbl">Total productos</div></div>
+    <div class="metric"><div class="metric-val" id="m-active" style="color:#27500A;">0</div><div class="metric-lbl">Publicados</div></div>
+    <div class="metric"><div class="metric-val" id="m-pending" style="color:#BA7517;">0</div><div class="metric-lbl">En revisión</div></div>
+  </div>
+
+  <div class="legend">
+    <div class="leg"><div class="leg-dot" style="background:#27500A;"></div>Publicados</div>
+    <div class="leg"><div class="leg-dot" style="background:#BA7517;"></div>En revisión</div>
+  </div>
+
+  <div class="cats" id="cats"></div>
+
+  <div class="footer">Travelisimo · Datos actualizados mayo 2026</div>
+</div>
+
+<script>
+const cats = [
+  { key: 'hotel',      label: 'Hoteles y resorts',   icon: '🏨' },
+  { key: 'casa',       label: 'Casas vacacionales',  icon: '🏠' },
+  { key: 'estancia',   label: 'Estancias únicas',    icon: '🌿' },
+  { key: 'tour',       label: 'Tours y excursiones', icon: '🗺️' },
+  { key: 'paquete',    label: 'Paquetes turísticos', icon: '📦' },
+  { key: 'transporte', label: 'Transporte privado',  icon: '🚐' },
+];
+
+const data = {
+  "La Libertad":  { hotel:{a:3,r:3}, casa:{a:5,r:7}, estancia:{a:0,r:0}, tour:{a:1,r:0}, paquete:{a:1,r:3}, transporte:{a:0,r:0} },
+  "San Salvador": { hotel:{a:7,r:5}, casa:{a:2,r:3}, estancia:{a:0,r:2}, tour:{a:20,r:1},paquete:{a:6,r:0}, transporte:{a:0,r:0} },
+  "Santa Ana":    { hotel:{a:3,r:3}, casa:{a:5,r:0}, estancia:{a:0,r:2}, tour:{a:0,r:0}, paquete:{a:1,r:0}, transporte:{a:0,r:0} },
+  "Sonsonate":    { hotel:{a:2,r:3}, casa:{a:2,r:0}, estancia:{a:5,r:8}, tour:{a:2,r:0}, paquete:{a:0,r:0}, transporte:{a:0,r:0} },
+  "Ahuachapán":   { hotel:{a:2,r:3}, casa:{a:1,r:2}, estancia:{a:0,r:8}, tour:{a:0,r:0}, paquete:{a:0,r:0}, transporte:{a:0,r:0} },
+  "La Paz":       { hotel:{a:2,r:0}, casa:{a:6,r:5}, estancia:{a:0,r:0}, tour:{a:0,r:0}, paquete:{a:2,r:1}, transporte:{a:0,r:0} },
+  "Chalatenango": { hotel:{a:1,r:1}, casa:{a:0,r:0}, estancia:{a:0,r:0}, tour:{a:1,r:0}, paquete:{a:0,r:0}, transporte:{a:0,r:0} },
+  "San Miguel":   { hotel:{a:2,r:2}, casa:{a:0,r:0}, estancia:{a:0,r:0}, tour:{a:2,r:0}, paquete:{a:0,r:0}, transporte:{a:0,r:0} },
+  "Usulután":     { hotel:{a:1,r:0}, casa:{a:0,r:0}, estancia:{a:0,r:0}, tour:{a:0,r:0}, paquete:{a:0,r:0}, transporte:{a:0,r:0} },
+  "La Unión":     { hotel:{a:0,r:1}, casa:{a:1,r:4}, estancia:{a:0,r:0}, tour:{a:0,r:0}, paquete:{a:0,r:0}, transporte:{a:0,r:0} },
+  "Cuscatlán":    { hotel:{a:2,r:0}, casa:{a:0,r:0}, estancia:{a:0,r:0}, tour:{a:0,r:0}, paquete:{a:0,r:0}, transporte:{a:0,r:0} },
+  "San Vicente":  { hotel:{a:0,r:0}, casa:{a:1,r:0}, estancia:{a:0,r:0}, tour:{a:0,r:0}, paquete:{a:0,r:0}, transporte:{a:0,r:0} },
+};
+
+function getAgg(deptKey) {
+  const depts = deptKey === 'all' ? Object.values(data) : [data[deptKey] || {}];
+  const result = {};
+  cats.forEach(c => { result[c.key] = { a:0, r:0 }; });
+  depts.forEach(dept => {
+    cats.forEach(c => {
+      if (dept[c.key]) {
+        result[c.key].a += dept[c.key].a;
+        result[c.key].r += dept[c.key].r;
+      }
+    });
+  });
+  return result;
+}
+
+function render() {
+  const dept = document.getElementById('dept-select').value;
+  const agg = getAgg(dept);
+
+  let active = 0, pending = 0;
+  cats.forEach(c => { active += agg[c.key].a; pending += agg[c.key].r; });
+
+  document.getElementById('m-total').textContent   = active + pending;
+  document.getElementById('m-active').textContent  = active;
+  document.getElementById('m-pending').textContent = pending;
+
+  const container = document.getElementById('cats');
+  container.innerHTML = '';
+
+  cats.forEach(c => {
+    const d = agg[c.key];
+    const t = d.a + d.r;
+    const isEmpty = t === 0;
+    const pA = isEmpty ? 0 : Math.round((d.a / t) * 100);
+    const pP = isEmpty ? 0 : 100 - pA;
+
+    const card = document.createElement('div');
+    card.className = 'cat-card' + (isEmpty ? ' empty' : '');
+    card.innerHTML = `
+      <div class="cat-header">
+        <div class="cat-name">
+          <span class="cat-icon">${c.icon}</span>
+          ${c.label}
+        </div>
+        <div class="cat-total">${t} productos</div>
+      </div>
+      <div class="bar-wrap">
+        ${!isEmpty && d.a > 0 ? `<div class="seg seg-active"  style="width:${pA}%">${pA > 10 ? d.a : ''}</div>` : ''}
+        ${!isEmpty && d.r > 0 ? `<div class="seg seg-pending" style="width:${pP}%">${pP > 10 ? d.r : ''}</div>` : ''}
+      </div>
+      <div class="badges">
+        <span class="badge ${d.a > 0 ? 'b-active' : 'b-zero'}">${d.a} publicados</span>
+        <span class="badge ${d.r > 0 ? 'b-pending' : 'b-zero'}">${d.r} en revisión</span>
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+render();
+</script>
+</body>
+</html>
