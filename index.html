@@ -7,204 +7,375 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: #F5F5F0; color: #1a1a1a; min-height: 100vh; }
-
-  .page { max-width: 780px; margin: 0 auto; padding: 1.5rem 1rem; }
-
+  .page { max-width: 900px; margin: 0 auto; padding: 1.5rem 1rem; }
   .header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.5rem; gap: 12px; flex-wrap: wrap; }
-  .header-left { display: flex; flex-direction: column; gap: 2px; }
   .logo { font-size: 11px; font-weight: 700; color: #1565C0; letter-spacing: 1.5px; text-transform: uppercase; }
   .title { font-size: 20px; font-weight: 600; color: #1a1a1a; }
   .subtitle { font-size: 12px; color: #888; margin-top: 2px; }
-
-  select {
-    font-size: 13px; padding: 9px 36px 9px 14px;
-    border-radius: 8px; border: 0.5px solid #D0D0D0;
-    background: #fff; color: #1a1a1a; cursor: pointer;
-    width: 100%; max-width: 260px; appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat; background-position: right 12px center;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-  }
-  select:focus { outline: none; border-color: #1565C0; }
-
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  select { font-size: 13px; padding: 8px 32px 8px 12px; border-radius: 8px; border: 0.5px solid #D0D0D0; background: #fff; color: #1a1a1a; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
   .metrics { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 1.5rem; }
   .metric { background: #fff; border: 0.5px solid #E8E8E8; border-radius: 10px; padding: 14px 16px; }
   .metric-val { font-size: 26px; font-weight: 600; line-height: 1; }
   .metric-lbl { font-size: 11px; color: #888; margin-top: 5px; }
-
-  .legend { display: flex; gap: 14px; margin-bottom: 1rem; flex-wrap: wrap; }
+  .legend { display: flex; gap: 16px; margin-bottom: 1.25rem; flex-wrap: wrap; }
   .leg { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #666; }
   .leg-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
-
-  .cats { display: flex; flex-direction: column; gap: 10px; }
-
-  .cat-card { background: #fff; border: 0.5px solid #E8E8E8; border-radius: 12px; padding: 14px 16px; transition: opacity 0.2s; }
-  .cat-card.empty { opacity: 0.45; }
-
-  .cat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-  .cat-name { font-size: 13px; font-weight: 600; color: #1a1a1a; display: flex; align-items: center; gap: 7px; }
-  .cat-icon { font-size: 16px; }
-  .cat-total { font-size: 11px; color: #aaa; white-space: nowrap; }
-
-  .bar-wrap { width: 100%; height: 22px; background: #F0F0F0; border-radius: 5px; overflow: hidden; display: flex; margin-bottom: 10px; }
-  .seg { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; overflow: hidden; white-space: nowrap; transition: width 0.4s ease; }
-  .seg-active  { background: #27500A; color: #EAF3DE; }
+  .cat-section { margin-bottom: 1.25rem; }
+  .cat-header-bar { display: flex; align-items: center; justify-content: space-between; background: #fff; border: 0.5px solid #E8E8E8; border-radius: 10px 10px 0 0; padding: 12px 16px; cursor: pointer; }
+  .cat-header-bar.collapsed { border-radius: 10px; }
+  .cat-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .cat-counts { display: flex; gap: 8px; align-items: center; }
+  .pill { font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 20px; }
+  .pill-pub { background: #EAF3DE; color: #27500A; }
+  .pill-rev { background: #FAEEDA; color: #BA7517; }
+  .chevron { font-size: 14px; color: #aaa; transition: transform 0.2s; }
+  .chevron.open { transform: rotate(180deg); }
+  .cat-body { background: #fff; border: 0.5px solid #E8E8E8; border-top: none; border-radius: 0 0 10px 10px; overflow: hidden; }
+  .bar-row { padding: 8px 16px; }
+  .bar-wrap { width: 100%; height: 20px; background: #F0F0F0; border-radius: 4px; overflow: hidden; display: flex; }
+  .seg { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; overflow: hidden; white-space: nowrap; }
+  .seg-active { background: #27500A; color: #EAF3DE; }
   .seg-pending { background: #BA7517; color: #FAEEDA; }
-
-  .badges { display: flex; gap: 6px; flex-wrap: wrap; }
-  .badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 6px; }
-  .b-active  { background: #EAF3DE; color: #27500A; }
-  .b-pending { background: #FAEEDA; color: #BA7517; }
-  .b-zero    { background: #F5F5F5; color: #aaa; }
-
-  .footer { margin-top: 2rem; text-align: center; font-size: 11px; color: #bbb; padding-bottom: 1rem; }
-
+  .sub-section { border-top: 0.5px solid #F0F0F0; }
+  .sub-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; cursor: pointer; background: #FAFAFA; }
+  .sub-title { font-size: 12px; font-weight: 600; color: #555; display: flex; align-items: center; gap: 6px; }
+  .sub-body { padding: 0 16px 10px; }
+  .prop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 6px; margin-top: 8px; }
+  .prop-tag { font-size: 11px; padding: 4px 10px; border-radius: 6px; display: flex; align-items: center; gap: 5px; }
+  .prop-pub { background: #EAF3DE; color: #3B6D11; }
+  .prop-cont { background: #FFF3CD; color: #856404; }
+  .prop-info { background: #F0E6FF; color: #6A1B9A; }
+  .reason-label { font-size: 10px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 10px; margin-bottom: 4px; }
+  .dept-filter-label { font-size: 12px; color: #888; }
   @media (max-width: 600px) {
-    .page { padding: 1rem 0.875rem; }
-    .header { flex-direction: column; align-items: flex-start; gap: 12px; }
-    select { max-width: 100%; }
+    .header { flex-direction: column; }
     .metrics { grid-template-columns: repeat(3,1fr); gap: 8px; }
-    .metric { padding: 12px 10px; }
-    .metric-val { font-size: 22px; }
-    .metric-lbl { font-size: 10px; }
-    .title { font-size: 18px; }
-    .cat-name { font-size: 12px; }
-  }
-
-  @media (max-width: 380px) {
-    .metrics { grid-template-columns: repeat(3,1fr); gap: 6px; }
-    .metric-val { font-size: 20px; }
-    .metric { padding: 10px 8px; }
-    .cat-card { padding: 12px 12px; }
+    .prop-grid { grid-template-columns: 1fr 1fr; }
   }
 </style>
 </head>
 <body>
 <div class="page">
-
   <div class="header">
-    <div class="header-left">
-      <span class="logo">Travelisimo</span>
+    <div>
+      <div class="logo">Travelisimo</div>
       <div class="title">Inventario de productos</div>
       <div class="subtitle">El Salvador — Mayo 2026</div>
     </div>
-    <select id="dept-select" onchange="render()">
-      <option value="all">Todos los departamentos</option>
-      <option value="La Libertad">La Libertad</option>
-      <option value="San Salvador">San Salvador</option>
-      <option value="Santa Ana">Santa Ana</option>
-      <option value="Sonsonate">Sonsonate</option>
-      <option value="Ahuachapán">Ahuachapán</option>
-      <option value="La Paz">La Paz</option>
-      <option value="Chalatenango">Chalatenango</option>
-      <option value="San Miguel">San Miguel</option>
-      <option value="Usulután">Usulután</option>
-      <option value="La Unión">La Unión</option>
-      <option value="Cuscatlán">Cuscatlán</option>
-      <option value="San Vicente">San Vicente</option>
-    </select>
+    <div class="controls">
+      <span class="dept-filter-label">Departamento:</span>
+      <select id="dept-select" onchange="render()">
+        <option value="all">Todos</option>
+        <option value="La Libertad">La Libertad</option>
+        <option value="San Salvador">San Salvador</option>
+        <option value="Santa Ana">Santa Ana</option>
+        <option value="Sonsonate">Sonsonate</option>
+        <option value="Ahuachapán">Ahuachapán</option>
+        <option value="La Paz">La Paz</option>
+        <option value="Chalatenango">Chalatenango</option>
+        <option value="San Miguel">San Miguel</option>
+        <option value="Usulután">Usulután</option>
+        <option value="La Unión">La Unión</option>
+        <option value="Cuscatlán">Cuscatlán</option>
+        <option value="San Vicente">San Vicente</option>
+      </select>
+    </div>
   </div>
-
+ 
   <div class="metrics">
-    <div class="metric"><div class="metric-val" id="m-total" style="color:#1a1a1a;">0</div><div class="metric-lbl">Total productos</div></div>
-    <div class="metric"><div class="metric-val" id="m-active" style="color:#27500A;">0</div><div class="metric-lbl">Publicados</div></div>
-    <div class="metric"><div class="metric-val" id="m-pending" style="color:#BA7517;">0</div><div class="metric-lbl">En revisión</div></div>
+    <div class="metric"><div class="metric-val" id="m-total">0</div><div class="metric-lbl">Total productos</div></div>
+    <div class="metric"><div class="metric-val" id="m-pub" style="color:#27500A;">0</div><div class="metric-lbl">Publicados</div></div>
+    <div class="metric"><div class="metric-val" id="m-rev" style="color:#BA7517;">0</div><div class="metric-lbl">En revisión</div></div>
   </div>
-
+ 
   <div class="legend">
-    <div class="leg"><div class="leg-dot" style="background:#27500A;"></div>Publicados</div>
-    <div class="leg"><div class="leg-dot" style="background:#BA7517;"></div>En revisión</div>
+    <div class="leg"><div class="leg-dot" style="background:#27500A;"></div>Publicado</div>
+    <div class="leg"><span style="font-size:13px;">🎬</span> Con video</div>
+    <div class="leg"><span style="font-size:13px;">📷</span> Sin video</div>
+    <div class="leg"><div class="leg-dot" style="background:#FFF3CD;border:1px solid #E0C060;"></div>Pend. contenido</div>
+    <div class="leg"><div class="leg-dot" style="background:#F0E6FF;border:1px solid #C9A0DC;"></div>Pend. información</div>
   </div>
-
-  <div class="cats" id="cats"></div>
-
-  <div class="footer">Travelisimo · Datos actualizados mayo 2026</div>
+ 
+  <div id="cat-container"></div>
+  <div style="margin-top:2rem;text-align:center;font-size:11px;color:#bbb;">Travelisimo · Datos actualizados mayo 2026</div>
 </div>
-
+ 
 <script>
 const cats = [
-  { key: 'hotel',      label: 'Hoteles y resorts',   icon: '🏨' },
-  { key: 'casa',       label: 'Casas vacacionales',  icon: '🏠' },
-  { key: 'estancia',   label: 'Estancias únicas',    icon: '🌿' },
-  { key: 'tour',       label: 'Tours y excursiones', icon: '🗺️' },
-  { key: 'paquete',    label: 'Paquetes turísticos', icon: '📦' },
-  { key: 'transporte', label: 'Transporte privado',  icon: '🚐' },
+  { key: 'hotel',    label: 'Hoteles y resorts',  icon: '🏨' },
+  { key: 'casa',     label: 'Casas vacacionales', icon: '🏠' },
+  { key: 'estancia', label: 'Estancias únicas',   icon: '🌿' },
 ];
-
+ 
 const data = {
-  "La Libertad":  { hotel:{a:3,r:4}, casa:{a:5,r:18}, estancia:{a:0,r:1}, tour:{a:1,r:0}, paquete:{a:1,r:3}, transporte:{a:0,r:0} },
-  "San Salvador": { hotel:{a:7,r:5}, casa:{a:2,r:5}, estancia:{a:0,r:2}, tour:{a:20,r:1},paquete:{a:6,r:0}, transporte:{a:0,r:0} },
-  "Santa Ana":    { hotel:{a:3,r:3}, casa:{a:5,r:0}, estancia:{a:0,r:2}, tour:{a:0,r:0}, paquete:{a:1,r:0}, transporte:{a:0,r:0} },
-  "Sonsonate":    { hotel:{a:2,r:3}, casa:{a:2,r:0}, estancia:{a:5,r:8}, tour:{a:2,r:0}, paquete:{a:0,r:0}, transporte:{a:0,r:0} },
-  "Ahuachapán":   { hotel:{a:2,r:3}, casa:{a:1,r:3}, estancia:{a:0,r:8}, tour:{a:0,r:0}, paquete:{a:0,r:0}, transporte:{a:0,r:0} },
-  "La Paz":       { hotel:{a:2,r:0}, casa:{a:6,r:9}, estancia:{a:0,r:0}, tour:{a:0,r:0}, paquete:{a:2,r:1}, transporte:{a:0,r:0} },
-  "Chalatenango": { hotel:{a:1,r:1}, casa:{a:0,r:0}, estancia:{a:0,r:0}, tour:{a:1,r:0}, paquete:{a:0,r:0}, transporte:{a:0,r:0} },
-  "San Miguel":   { hotel:{a:2,r:2}, casa:{a:0,r:0}, estancia:{a:0,r:0}, tour:{a:2,r:0}, paquete:{a:0,r:0}, transporte:{a:0,r:0} },
-  "Usulután":     { hotel:{a:1,r:0}, casa:{a:0,r:0}, estancia:{a:0,r:0}, tour:{a:0,r:0}, paquete:{a:0,r:0}, transporte:{a:0,r:0} },
-  "La Unión":     { hotel:{a:0,r:1}, casa:{a:1,r:4}, estancia:{a:0,r:0}, tour:{a:0,r:0}, paquete:{a:0,r:0}, transporte:{a:0,r:0} },
-  "Cuscatlán":    { hotel:{a:2,r:0}, casa:{a:0,r:0}, estancia:{a:0,r:0}, tour:{a:0,r:0}, paquete:{a:0,r:0}, transporte:{a:0,r:0} },
-  "San Vicente":  { hotel:{a:0,r:0}, casa:{a:1,r:0}, estancia:{a:0,r:0}, tour:{a:0,r:0}, paquete:{a:0,r:0}, transporte:{a:0,r:0} },
+  hotel: {
+    pub: [
+      {name:'Astra Beach Club & Resort', dept:'La Paz', video:false},
+      {name:'Bahía del Sol', dept:'La Paz', video:false},
+      {name:'Cardedeu Centro', dept:'San Salvador', video:true},
+      {name:'Cardedeu Suites', dept:'San Salvador', video:true},
+      {name:'Casa 1800 Ataco', dept:'Ahuachapán', video:true},
+      {name:'Casa 1800 Cerro Verde', dept:'Santa Ana', video:true},
+      {name:'Casa 1800 Suchitoto', dept:'Cuscatlán', video:false},
+      {name:'Casa DeGraciela', dept:'Ahuachapán', video:true},
+      {name:'Chalatenango Country', dept:'Chalatenango', video:true},
+      {name:'Fleur de Lis', dept:'Ahuachapán', video:true},
+      {name:'Hotel Bourbon', dept:'Sonsonate', video:true},
+      {name:'Hotel Capital', dept:'San Salvador', video:false},
+      {name:'Hotel Edificio Kali', dept:'Santa Ana', video:true},
+      {name:'Hotel Equinoccio', dept:'Santa Ana', video:true},
+      {name:'Hotel Gardenia Inn', dept:'San Salvador', video:true},
+      {name:'Hotel Los Farallones', dept:'La Libertad', video:true},
+      {name:'Hotel Nido de Pájaro', dept:'Sonsonate', video:true},
+      {name:'Hotel Pacific Sunrise', dept:'La Libertad', video:false},
+      {name:'Hotel Sevilla', dept:'Usulután', video:false},
+      {name:'Hotel Sueños', dept:'San Salvador', video:false},
+      {name:'Hotel Tortuga Village', dept:'San Salvador', video:true},
+      {name:'Hotel Árbol de Sueños', dept:'San Salvador', video:true},
+      {name:'Las Flores Surf Resort', dept:'San Miguel', video:true},
+      {name:'Los Almendros Suchitoto', dept:'Cuscatlán', video:true},
+      {name:'Los Cuatro Olivos', dept:'Sonsonate', video:true},
+      {name:'Mizata by Antiresort', dept:'La Libertad', video:true},
+      {name:'Villa Terra', dept:'San Salvador', video:true},
+      {name:'Vista Las Olas Resort', dept:'San Miguel', video:true},
+    ],
+    rev_contenido: [
+      {name:'Hotel Casa del Golfo', dept:'La Unión'},
+      {name:'Hotel Citlalli', dept:'San Salvador'},
+      {name:'Hotel Diamond', dept:'San Salvador'},
+      {name:'Hotel Las Palmeras', dept:'Sonsonate'},
+      {name:'Hotel María Isabel Ataco', dept:'Ahuachapán'},
+      {name:'Hotel Mirador Plaza', dept:'San Salvador'},
+      {name:'Hotel Villa San Miguel', dept:'San Miguel'},
+      {name:'Hotel La Palma', dept:'Chalatenango'},
+      {name:'La Cocotera Resort', dept:'Ahuachapán'},
+      {name:'Lake View House', dept:'Santa Ana'},
+      {name:'Las Veraneras Resort', dept:'Sonsonate'},
+      {name:'Papaya Surf', dept:'La Libertad'},
+      {name:'Paradise Surf Hotel', dept:'San Miguel'},
+      {name:'Remfort Hotel', dept:'Santa Ana'},
+      {name:'The Beach Break Hotel', dept:'La Libertad'},
+      {name:'Villa Antigua', dept:'San Salvador'},
+    ],
+    rev_info: [
+      {name:'Cardedeu Coatepeque', dept:'Santa Ana'},
+      {name:'Cardedeu Residence Cangrejera', dept:'La Libertad'},
+      {name:'Eco Del Mar', dept:'La Libertad'},
+    ],
+  },
+  casa: {
+    pub: [
+      {name:'701 Apartamento', dept:'San Salvador', video:true},
+      {name:'Apartamento Frente al Mar', dept:'La Unión', video:true},
+      {name:'Apto. en Playa Las Tunas', dept:'La Unión', video:true},
+      {name:'Azul Beach House', dept:'La Paz', video:true},
+      {name:'Beach Break Villas', dept:'La Libertad', video:false},
+      {name:'Casa Cielo', dept:'Santa Ana', video:true},
+      {name:'Casa Tropical', dept:'La Paz', video:true},
+      {name:'Casa Tucán', dept:'La Libertad', video:true},
+      {name:'Casa Wabi', dept:'Santa Ana', video:true},
+      {name:'Casa de Campo', dept:'Santa Ana', video:true},
+      {name:'Casa del Sol', dept:'La Paz', video:true},
+      {name:'Casa del Árbol', dept:'Santa Ana', video:true},
+      {name:'Estancia Sol Turquesa', dept:'San Salvador', video:true},
+      {name:'Finca El Manzano', dept:'Sonsonate', video:true},
+      {name:'Mansión San Blas', dept:'La Libertad', video:true},
+      {name:'Ocean Paradise', dept:'Ahuachapán', video:false},
+      {name:'Pedacito de Cielo', dept:'Santa Ana', video:true},
+      {name:'Rancho Tesoro del Estero', dept:'La Paz', video:true},
+      {name:'Res. Costa del Sol', dept:'La Paz', video:true},
+      {name:'Residencia del Sol', dept:'La Paz', video:true},
+      {name:'Residencia en Santa Clara', dept:'San Vicente', video:true},
+      {name:'Rincon de los Alpes', dept:'La Libertad', video:true},
+      {name:'Rincón de las Garzas Lake', dept:'San Salvador', video:false},
+      {name:'Sihua Surf House', dept:'La Libertad', video:true},
+      {name:'Utopia Beach House', dept:'Sonsonate', video:true},
+      {name:'Villa Beraca', dept:'La Libertad', video:true},
+      {name:'Villa Cerromar', dept:'La Libertad', video:true},
+      {name:'Villa Moderna', dept:'La Libertad', video:true},
+      {name:'Villa Palma', dept:'La Paz', video:true},
+      {name:'Villamar', dept:'La Paz', video:false},
+      {name:'Vista Azul', dept:'La Unión', video:true},
+    ],
+    rev_contenido: [
+      {name:'Bella Mar', dept:'La Paz'},
+      {name:'Casa Alto Roger', dept:'Ahuachapán'},
+      {name:'Casa Brisa Marina', dept:'La Libertad'},
+      {name:'Casa Brisa Tropical', dept:'La Paz'},
+      {name:'Casa Solara', dept:'La Paz'},
+      {name:'Casa Vista Coate', dept:'Santa Ana'},
+      {name:'Casita del Bosque', dept:'Ahuachapán'},
+      {name:'Finca Alto Boquerón', dept:'La Libertad'},
+      {name:'Grand Vista Apartment', dept:'San Salvador'},
+      {name:'Isla Sol y Mar', dept:'La Paz'},
+      {name:'Loft 5A', dept:'San Salvador'},
+      {name:'Loft 5B', dept:'San Salvador'},
+      {name:'Mi Paraiso Shalpa', dept:'La Libertad'},
+      {name:'Oasis del Sol', dept:'La Libertad'},
+      {name:'Palma Nativa', dept:'La Libertad'},
+      {name:'Peña Blanca', dept:'La Libertad'},
+      {name:'Punta Dorada Beach House', dept:'La Unión'},
+      {name:'Rancho Silonet', dept:'La Libertad'},
+      {name:'Risco Azul', dept:'La Libertad'},
+      {name:'Vibes Atami 3BR House', dept:'La Libertad'},
+      {name:'Villa mar 27', dept:'La Libertad'},
+    ],
+    rev_info: [
+      {name:'Mariposa Reina A', dept:'La Unión'},
+      {name:'Sunset Luxe Apartment', dept:'San Salvador'},
+    ],
+  },
+  estancia: {
+    pub: [
+      {name:'Bosque Pacamara Lodge', dept:'Sonsonate', video:false},
+      {name:'Cabaña Canario', dept:'Ahuachapán', video:false},
+      {name:'Cabaña Clarinero', dept:'Ahuachapán', video:false},
+      {name:'Cabaña Del Bosque', dept:'Sonsonate', video:false},
+      {name:'Cabaña Monte Naranjo', dept:'Sonsonate', video:false},
+      {name:'Cabaña Torogoz', dept:'Ahuachapán', video:false},
+      {name:'Glamping Caturra Sky', dept:'Sonsonate', video:false},
+      {name:'Nido Moka Sky', dept:'Sonsonate', video:false},
+    ],
+    rev_contenido: [
+      {name:'Buena Vista Garden - Cabaña', dept:'Sonsonate'},
+      {name:'Buena Vista Garden - Glamping', dept:'Sonsonate'},
+      {name:'Cabaña Chiltota', dept:'Ahuachapán'},
+      {name:'Cabaña Colibrí', dept:'Ahuachapán'},
+      {name:'Cabaña Deluxe', dept:'San Salvador'},
+      {name:'Cabaña Tucán', dept:'Ahuachapán'},
+      {name:'Cardedeu Volcán de San Salvador - Glamping', dept:'San Salvador'},
+      {name:'Domo Aura Verde', dept:'La Libertad'},
+      {name:'Domo Deluxe', dept:'Sonsonate'},
+      {name:'Domo Kafen', dept:'Sonsonate'},
+      {name:'Domo Suite', dept:'Sonsonate'},
+      {name:'Nido del Amor II', dept:'Ahuachapán'},
+      {name:'Suite Bubble', dept:'Sonsonate'},
+      {name:'Tiny House', dept:'Sonsonate'},
+    ],
+    rev_info: [
+      {name:'Igloos Campo Bella', dept:'Santa Ana'},
+      {name:'Master Suites', dept:'Santa Ana'},
+      {name:'Nido del Amor I', dept:'Ahuachapán'},
+      {name:'Thermal Paradise Villa', dept:'Sonsonate'},
+    ],
+  },
 };
-
-function getAgg(deptKey) {
-  const depts = deptKey === 'all' ? Object.values(data) : [data[deptKey] || {}];
-  const result = {};
-  cats.forEach(c => { result[c.key] = { a:0, r:0 }; });
-  depts.forEach(dept => {
-    cats.forEach(c => {
-      if (dept[c.key]) {
-        result[c.key].a += dept[c.key].a;
-        result[c.key].r += dept[c.key].r;
-      }
-    });
-  });
-  return result;
+ 
+let openCats = {hotel:true, casa:true, estancia:true};
+let openSubs = {};
+ 
+function filterByDept(arr, dept) {
+  if (dept === 'all') return arr;
+  return arr.filter(p => p.dept === dept);
 }
-
+ 
 function render() {
   const dept = document.getElementById('dept-select').value;
-  const agg = getAgg(dept);
-
-  let active = 0, pending = 0;
-  cats.forEach(c => { active += agg[c.key].a; pending += agg[c.key].r; });
-
-  document.getElementById('m-total').textContent   = active + pending;
-  document.getElementById('m-active').textContent  = active;
-  document.getElementById('m-pending').textContent = pending;
-
-  const container = document.getElementById('cats');
-  container.innerHTML = '';
-
+  let totalPub = 0, totalRev = 0;
+ 
   cats.forEach(c => {
-    const d = agg[c.key];
-    const t = d.a + d.r;
-    const isEmpty = t === 0;
-    const pA = isEmpty ? 0 : Math.round((d.a / t) * 100);
-    const pP = isEmpty ? 0 : 100 - pA;
-
-    const card = document.createElement('div');
-    card.className = 'cat-card' + (isEmpty ? ' empty' : '');
-    card.innerHTML = `
-      <div class="cat-header">
-        <div class="cat-name">
-          <span class="cat-icon">${c.icon}</span>
-          ${c.label}
+    const pub = filterByDept(data[c.key].pub, dept);
+    const rc = filterByDept(data[c.key].rev_contenido, dept);
+    const ri = filterByDept(data[c.key].rev_info, dept);
+    totalPub += pub.length;
+    totalRev += rc.length + ri.length;
+  });
+ 
+  document.getElementById('m-total').textContent = totalPub + totalRev;
+  document.getElementById('m-pub').textContent = totalPub;
+  document.getElementById('m-rev').textContent = totalRev;
+ 
+  const container = document.getElementById('cat-container');
+  container.innerHTML = '';
+ 
+  cats.forEach(c => {
+    const pub = filterByDept(data[c.key].pub, dept);
+    const rc = filterByDept(data[c.key].rev_contenido, dept);
+    const ri = filterByDept(data[c.key].rev_info, dept);
+    const total = pub.length + rc.length + ri.length;
+    if (total === 0 && dept !== 'all') return;
+ 
+    const pA = total > 0 ? Math.round((pub.length / total) * 100) : 0;
+    const pP = total > 0 ? 100 - pA : 0;
+    const isOpen = openCats[c.key];
+ 
+    const sec = document.createElement('div');
+    sec.className = 'cat-section';
+ 
+    sec.innerHTML = `
+      <div class="cat-header-bar ${isOpen ? '' : 'collapsed'}" onclick="toggleCat('${c.key}')">
+        <div class="cat-title">${c.icon} ${c.label}</div>
+        <div class="cat-counts">
+          <span class="pill pill-pub">${pub.length} publicados</span>
+          <span class="pill" style="background:#E3F2FD;color:#1565C0;">${pub.filter(p=>p.video).length} 🎬</span>
+          <span class="pill pill-rev">${rc.length + ri.length} en revisión</span>
+          <span class="chevron ${isOpen ? 'open' : ''}">▾</span>
         </div>
-        <div class="cat-total">${t} productos</div>
       </div>
-      <div class="bar-wrap">
-        ${!isEmpty && d.a > 0 ? `<div class="seg seg-active"  style="width:${pA}%">${pA > 10 ? d.a : ''}</div>` : ''}
-        ${!isEmpty && d.r > 0 ? `<div class="seg seg-pending" style="width:${pP}%">${pP > 10 ? d.r : ''}</div>` : ''}
-      </div>
-      <div class="badges">
-        <span class="badge ${d.a > 0 ? 'b-active' : 'b-zero'}">${d.a} publicados</span>
-        <span class="badge ${d.r > 0 ? 'b-pending' : 'b-zero'}">${d.r} en revisión</span>
-      </div>`;
-    container.appendChild(card);
+      ${isOpen ? `
+      <div class="cat-body">
+        <div class="bar-row">
+          <div class="bar-wrap">
+            ${pub.length > 0 ? `<div class="seg seg-active" style="width:${pA}%">${pA > 10 ? pub.length : ''}</div>` : ''}
+            ${(rc.length+ri.length) > 0 ? `<div class="seg seg-pending" style="width:${pP}%">${pP > 10 ? rc.length+ri.length : ''}</div>` : ''}
+          </div>
+        </div>
+ 
+        ${pub.length > 0 ? `
+        <div class="sub-section">
+          <div class="sub-header" onclick="toggleSub('${c.key}_pub')">
+            <div class="sub-title">✅ Publicados (${pub.length})</div>
+            <span class="chevron ${openSubs[c.key+'_pub'] !== false ? 'open' : ''}">▾</span>
+          </div>
+          ${openSubs[c.key+'_pub'] !== false ? `
+          <div class="sub-body">
+            <div class="prop-grid">${pub.map(p=>`<div class="prop-tag prop-pub">${p.video ? '🎬' : '📷'} ${p.name}${dept==='all'?` <span style="font-size:10px;opacity:0.7;">· ${p.dept}</span>`:''}</div>`).join('')}</div>
+          </div>` : ''}
+        </div>` : ''}
+ 
+        ${rc.length > 0 ? `
+        <div class="sub-section">
+          <div class="sub-header" onclick="toggleSub('${c.key}_rc')">
+            <div class="sub-title">📸 Pendientes de contenido (${rc.length})</div>
+            <span class="chevron ${openSubs[c.key+'_rc'] !== false ? 'open' : ''}">▾</span>
+          </div>
+          ${openSubs[c.key+'_rc'] !== false ? `
+          <div class="sub-body">
+            <div class="prop-grid">${rc.map(p=>`<div class="prop-tag prop-cont">⏳ ${p.name}${dept==='all'?` <span style="font-size:10px;opacity:0.7;">· ${p.dept}</span>`:''}</div>`).join('')}</div>
+          </div>` : ''}
+        </div>` : ''}
+ 
+        ${ri.length > 0 ? `
+        <div class="sub-section">
+          <div class="sub-header" onclick="toggleSub('${c.key}_ri')">
+            <div class="sub-title">📋 Pendientes de información / subir (${ri.length})</div>
+            <span class="chevron ${openSubs[c.key+'_ri'] !== false ? 'open' : ''}">▾</span>
+          </div>
+          ${openSubs[c.key+'_ri'] !== false ? `
+          <div class="sub-body">
+            <div class="prop-grid">${ri.map(p=>`<div class="prop-tag prop-info">📋 ${p.name}${dept==='all'?` <span style="font-size:10px;opacity:0.7;">· ${p.dept}</span>`:''}</div>`).join('')}</div>
+          </div>` : ''}
+        </div>` : ''}
+ 
+      </div>` : ''}
+    `;
+    container.appendChild(sec);
   });
 }
-
+ 
+function toggleCat(key) {
+  openCats[key] = !openCats[key];
+  render();
+}
+ 
+function toggleSub(key) {
+  openSubs[key] = openSubs[key] === false ? true : false;
+  render();
+}
+ 
 render();
 </script>
 </body>
 </html>
+
