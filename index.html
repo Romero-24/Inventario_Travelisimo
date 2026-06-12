@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Travelisimo — Inventario de Productos</title>
+<title>Travelisimo — Inventario por Departamento</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: #F5F5F0; color: #1a1a1a; min-height: 100vh; }
@@ -21,34 +21,29 @@
   .legend { display: flex; gap: 16px; margin-bottom: 1.25rem; flex-wrap: wrap; }
   .leg { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #666; }
   .leg-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
-  .cat-section { margin-bottom: 1.25rem; }
-  .cat-header-bar { display: flex; align-items: center; justify-content: space-between; background: #fff; border: 0.5px solid #E8E8E8; border-radius: 10px 10px 0 0; padding: 12px 16px; cursor: pointer; }
-  .cat-header-bar.collapsed { border-radius: 10px; }
-  .cat-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-  .cat-counts { display: flex; gap: 8px; align-items: center; }
+  .section-label { font-size: 12px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 0.08em; margin: 1.75rem 0 0.75rem; padding-left: 2px; }
+  .dept-section { margin-bottom: 1rem; }
+  .dept-header-bar { display: flex; align-items: center; justify-content: space-between; background: #fff; border: 0.5px solid #E8E8E8; border-radius: 10px 10px 0 0; padding: 12px 16px; cursor: pointer; }
+  .dept-header-bar.collapsed { border-radius: 10px; }
+  .dept-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .dept-counts { display: flex; gap: 8px; align-items: center; }
   .pill { font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 20px; }
   .pill-pub { background: #EAF3DE; color: #27500A; }
   .pill-rev { background: #FAEEDA; color: #BA7517; }
   .chevron { font-size: 14px; color: #aaa; transition: transform 0.2s; }
   .chevron.open { transform: rotate(180deg); }
-  .cat-body { background: #fff; border: 0.5px solid #E8E8E8; border-top: none; border-radius: 0 0 10px 10px; overflow: hidden; }
-  .bar-row { padding: 8px 16px; }
-  .bar-wrap { width: 100%; height: 20px; background: #F0F0F0; border-radius: 4px; overflow: hidden; display: flex; }
-  .seg { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; overflow: hidden; white-space: nowrap; }
-  .seg-active { background: #27500A; color: #EAF3DE; }
-  .seg-pending { background: #BA7517; color: #FAEEDA; }
-  .sub-section { border-top: 0.5px solid #F0F0F0; }
-  .sub-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; cursor: pointer; background: #FAFAFA; }
-  .sub-title { font-size: 12px; font-weight: 600; color: #555; display: flex; align-items: center; gap: 6px; }
-  .sub-body { padding: 0 16px 10px; }
-  .prop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 6px; margin-top: 8px; }
+  .dept-body { background: #fff; border: 0.5px solid #E8E8E8; border-top: none; border-radius: 0 0 10px 10px; overflow: hidden; }
+  .cat-block { border-top: 0.5px solid #F0F0F0; padding: 10px 16px 4px; }
+  .cat-block:first-child { border-top: none; }
+  .cat-block-title { font-size: 12px; font-weight: 700; color: #555; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+  .sub-row-title { font-size: 11px; font-weight: 600; color: #999; text-transform: uppercase; letter-spacing: 0.05em; margin: 8px 0 6px; }
+  .prop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 6px; margin-bottom: 8px; }
   .prop-tag { font-size: 11px; padding: 4px 10px; border-radius: 6px; display: flex; align-items: center; gap: 5px; }
   .prop-pub { background: #EAF3DE; color: #3B6D11; }
   .prop-pub:hover { background: #D4EDBC; cursor: pointer; }
   .prop-cont { background: #FFF3CD; color: #856404; }
-  .prop-info { background: #F0E6FF; color: #6A1B9A; }
-  .reason-label { font-size: 10px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 10px; margin-bottom: 4px; }
-  .dept-filter-label { font-size: 12px; color: #888; }
+  .flat-section { background: #fff; border: 0.5px solid #E8E8E8; border-radius: 10px; padding: 14px 16px; margin-bottom: 1rem; }
+  .flat-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; justify-content: space-between; margin-bottom: 10px; }
   @media (max-width: 600px) {
     .header { flex-direction: column; }
     .metrics { grid-template-columns: repeat(3,1fr); gap: 8px; }
@@ -61,25 +56,13 @@
   <div class="header">
     <div>
       <div class="logo">Travelisimo</div>
-      <div class="title">Inventario de productos</div>
-      <div class="subtitle">El Salvador — Mayo 2026</div>
+      <div class="title">Inventario por departamento</div>
+      <div class="subtitle">El Salvador — Junio 2026</div>
     </div>
     <div class="controls">
-      <span class="dept-filter-label">Departamento:</span>
+      <span style="font-size:12px;color:#888;">Departamento:</span>
       <select id="dept-select" onchange="render()">
         <option value="all">Todos</option>
-        <option value="La Libertad">La Libertad</option>
-        <option value="San Salvador">San Salvador</option>
-        <option value="Santa Ana">Santa Ana</option>
-        <option value="Sonsonate">Sonsonate</option>
-        <option value="Ahuachapán">Ahuachapán</option>
-        <option value="La Paz">La Paz</option>
-        <option value="Chalatenango">Chalatenango</option>
-        <option value="San Miguel">San Miguel</option>
-        <option value="Usulután">Usulután</option>
-        <option value="La Unión">La Unión</option>
-        <option value="Cuscatlán">Cuscatlán</option>
-        <option value="San Vicente">San Vicente</option>
       </select>
     </div>
   </div>
@@ -87,22 +70,31 @@
   <div class="metrics">
     <div class="metric"><div class="metric-val" id="m-total">0</div><div class="metric-lbl">Total productos</div></div>
     <div class="metric"><div class="metric-val" id="m-pub" style="color:#27500A;">0</div><div class="metric-lbl">Publicados</div></div>
-    <div class="metric"><div class="metric-val" id="m-rev" style="color:#BA7517;">0</div><div class="metric-lbl">En revisión</div></div>
+    <div class="metric"><div class="metric-val" id="m-rev" style="color:#BA7517;">0</div><div class="metric-lbl">Pend. contenido</div></div>
   </div>
  
   <div class="legend">
     <div class="leg"><div class="leg-dot" style="background:#27500A;"></div>Publicado</div>
-    <div class="leg"><span style="font-size:13px;">🎬</span> Con video</div>
-    <div class="leg"><span style="font-size:13px;">📷</span> Sin video</div>
     <div class="leg"><div class="leg-dot" style="background:#FFF3CD;border:1px solid #E0C060;"></div>Pend. contenido</div>
-    <div class="leg"><div class="leg-dot" style="background:#F0E6FF;border:1px solid #C9A0DC;"></div>Pend. información</div>
   </div>
  
-  <div id="cat-container"></div>
-  <div style="margin-top:2rem;text-align:center;font-size:11px;color:#bbb;">Travelisimo · Datos actualizados mayo 2026</div>
+  <div class="section-label">Alojamiento por categoría</div>
+  <div id="dept-container"></div>
+ 
+  <div class="section-label">Otros productos (no aplican por departamento)</div>
+  <div id="other-container"></div>
+ 
+  <div style="margin-top:2rem;text-align:center;font-size:11px;color:#bbb;">Travelisimo · Datos actualizados junio 2026</div>
 </div>
  
 <script>
+// Helper para construir links
+const h  = slug => `https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/${slug}?currency=USD&language=es&country=SV&`;
+const c  = slug => `https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/${slug}?country=SV&`;
+const cg = slug => `https://travelisimo.com/country/accommodation/vacation-rentals/location/${slug}`;
+const cgs= slug => `https://travelisimo.com/es/country/alojamiento/casas-vacacionales/location/${slug}`;
+const e  = slug => `https://travelisimo.com/es/el-salvador/alojamiento/estadias-unicas/${slug}?country=SV&`;
+ 
 const cats = [
   { key: 'hotel',    label: 'Hoteles y resorts',  icon: '🏨' },
   { key: 'casa',     label: 'Casas vacacionales', icon: '🏠' },
@@ -110,272 +102,418 @@ const cats = [
 ];
  
 const data = {
-  hotel: {
-    pub: [
-      {name:'Astra Beach Club & Resort', dept:'La Paz', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/san-luis-la-herradura/astra-beach-club-and-resort?currency=USD&language=es&country=SV&'},
-      {name:'Bahía del Sol', dept:'La Paz', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/san-luis-la-herradura/bahia-del-sol?currency=USD&language=es&country=SV&'},
-      {name:'Cardedeu Centro', dept:'San Salvador', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/san-salvador/cardedeu-centro?currency=USD&language=es&country=SV&'},
-      {name:'Cardedeu Suites', dept:'San Salvador', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/san-salvador/cardedeu-suites?currency=USD&language=es&country=SV&'},
-      {name:'Casa 1800 Ataco', dept:'Ahuachapán', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/concepcion-de-ataco/casa-1800-ataco-2?currency=USD&language=es&country=SV&'},
-      {name:'Casa 1800 Cerro Verde', dept:'Santa Ana', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/santa-ana/casa-1800-cerro-verde-2?currency=USD&language=es&country=SV&'},
-      {name:'Casa 1800 Suchitoto', dept:'Cuscatlán', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/suchitoto/casa-1800-suchitoto?currency=USD&language=es&country=SV&'},
-      {name:'Casa DeGraciela', dept:'Ahuachapán', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/concepcion-de-ataco/casa-degraciela?currency=USD&language=es&country=SV&'},
-      {name:'Chalatenango Country', dept:'Chalatenango', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/chalatenango/chalatenango-country?currency=USD&language=es&country=SV&'},
-      {name:'Fleur de Lis', dept:'Ahuachapán', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/concepcion-de-ataco/fleur-de-lis?currency=USD&language=es&country=SV&'},
-      {name:'Hotel Bourbon', dept:'Sonsonate', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/juayua/hotel-bourbon?currency=USD&language=es&country=SV&'},
-      {name:'Hotel Capital', dept:'San Salvador', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/san-salvador/hotel-capital?currency=USD&language=es&country=SV&'},
-      {name:'Hotel Edificio Kali', dept:'Santa Ana', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/santa-ana/hotel-edificio-kali?currency=USD&language=es&country=SV&'},
-      {name:'Hotel Equinoccio', dept:'Santa Ana', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/el-congo/hotel-equinoccio?currency=USD&language=es&country=SV&'},
-      {name:'Hotel Gardenia Inn', dept:'San Salvador', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/san-salvador/hotel-gardenia-inn?currency=USD&language=es&country=SV&'},
-      {name:'Hotel Los Farallones', dept:'La Libertad', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/la-libertad/hotel-los-farallones-2?currency=USD&language=es&country=SV&'},
-      {name:'Hotel Nido de Pájaro', dept:'Sonsonate', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/juayua/hotel-nido-de-pajaro?currency=USD&language=es&country=SV&'},
-      {name:'Hotel Pacific Sunrise', dept:'La Libertad', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/la-libertad/hotel-pacific-sunrise-4?currency=USD&language=es&country=SV&'},
-      {name:'Hotel Sevilla', dept:'Usulután', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/santa-maria/hotel-sevilla-2?currency=USD&language=es&country=SV&'},
-      {name:'Hotel Sueños', dept:'San Salvador', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/san-salvador/hotel-suenos?currency=USD&language=es&country=SV&'},
-      {name:'Hotel Tortuga Village', dept:'San Salvador', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/san-salvador/hotel-tortuga-village?currency=USD&language=es&country=SV&'},
-      {name:'Hotel Árbol de Sueños', dept:'San Salvador', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/san-salvador/hotel-arbol-de-suenos?currency=USD&language=es&country=SV&'},
-      {name:'Las Flores Surf Resort', dept:'San Miguel', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/chirilagua/las-flores-surf-resort?currency=USD&language=es&country=SV&'},
-      {name:'Los Almendros Suchitoto', dept:'Cuscatlán', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/suchitoto/los-almendros-suchitoto?currency=USD&language=es&country=SV&'},
-      {name:'Los Cuatro Olivos', dept:'Sonsonate', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/juayua/los-cuatro-olivos?currency=USD&language=es&country=SV&'},
-      {name:'Mizata by Antiresort', dept:'La Libertad', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/teotepeque/mizata-by-antiresort?currency=USD&language=es&country=SV&'},
-      {name:'Villa Terra', dept:'San Salvador', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/san-salvador/villa-terra?currency=USD&language=es&country=SV&'},
-      {name:'Vista Las Olas Resort', dept:'San Miguel', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/hoteles-y-resorts/chirilagua/vista-las-olas-resort-2?currency=USD&language=es&country=SV&'},
-    ],
-    rev_contenido: [
-      {name:'Hotel Casa del Golfo', dept:'La Unión'},
-      {name:'Hotel Citlalli', dept:'San Salvador'},
-      {name:'Hotel Diamond', dept:'San Salvador'},
-      {name:'Hotel Las Palmeras', dept:'Sonsonate'},
-      {name:'Hotel María Isabel Ataco', dept:'Ahuachapán'},
-      {name:'Hotel Mirador Plaza', dept:'San Salvador'},
-      {name:'Hotel Villa San Miguel', dept:'San Miguel'},
-      {name:'Hotel La Palma', dept:'Chalatenango'},
-      {name:'La Cocotera Resort', dept:'Ahuachapán'},
-      {name:'Lake View House', dept:'Santa Ana'},
-      {name:'Las Veraneras Resort', dept:'Sonsonate'},
-      {name:'Papaya Surf', dept:'La Libertad'},
-      {name:'Paradise Surf Hotel', dept:'San Miguel'},
-      {name:'Remfort Hotel', dept:'Santa Ana'},
-      {name:'The Beach Break Hotel', dept:'La Libertad'},
-      {name:'Villa Antigua', dept:'San Salvador'},
-    ],
-    rev_info: [
-      {name:'Cardedeu Coatepeque', dept:'Santa Ana'},
-      {name:'Cardedeu Residence Cangrejera', dept:'La Libertad'},
-      {name:'Eco Del Mar', dept:'La Libertad'},
-    ],
+  'Ahuachapán': {
+    hotel: {
+      pub: [
+        {name:'Casa 1800 Ataco', link:h('concepcion-de-ataco/casa-1800-ataco-2')},
+        {name:'Casa DeGraciela', link:h('concepcion-de-ataco/casa-degraciela')},
+        {name:'Fleur de Lis', link:h('concepcion-de-ataco/fleur-de-lis')},
+        {name:'Hotel María Isabel Ataco'},
+      ],
+      pending: [ {name:'La Cocotera Resort'} ],
+    },
+    casa: {
+      pub: [
+        {name:'Ocean Paradise', link:c('jujutla/ocean-paradise')},
+        {name:'Casa Alto Roger', link:c('concepcion-de-ataco/casa-alto-roger')},
+        {name:'Casita del Bosque', link:cg('casita-del-bosque-3')},
+      ],
+      pending: [ {name:'Sendero Termal Ahuachapán'} ],
+    },
+    estancia: {
+      pub: [
+        {name:'Cabaña Canario', link:e('apaneca/cabana-canario')},
+        {name:'Cabaña Clarinero', link:e('apaneca/cabana-clarinero')},
+        {name:'Cabaña Torogoz', link:e('apaneca/cabana-torogoz')},
+        {name:'Cabaña Chiltota'},
+        {name:'Cabaña Colibrí'},
+        {name:'Cabaña Tucán'},
+        {name:'Nido del Amor II'},
+      ],
+      pending: [ {name:'Nido del Amor I'} ],
+    },
   },
-  casa: {
-    pub: [
-      {name:'701 Apartamento', dept:'San Salvador', video:true, link:'https://travelisimo.com/country/accommodation/vacation-rentals/location/701-apartamento'},
-      {name:'Apartamento Frente al Mar', dept:'La Unión', video:true, link:''},
-      {name:'Apto. en Playa Las Tunas', dept:'La Unión', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/conchagua/apto-en-playa-las-tunas?country=SV&'},
-      {name:'Azul Beach House', dept:'La Paz', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/san-luis-la-herradura/azul-beach-house?country=SV&'},
-      {name:'Beach Break Villas', dept:'La Libertad', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/la-libertad/beach-break-villas?country=SV&'},
-      {name:'Casa Cielo', dept:'Santa Ana', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/santa-ana/casa-cielo-2?country=SV&'},
-      {name:'Casa Tropical', dept:'La Paz', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/san-luis-la-herradura/casa-tropical-4?country=SV&'},
-      {name:'Casa Tucán', dept:'La Libertad', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/la-libertad/casa-tucan?country=SV&'},
-      {name:'Casa Wabi', dept:'Santa Ana', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/santa-ana/casa-wabi?country=SV&'},
-      {name:'Casa de Campo', dept:'Santa Ana', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/coatepeque/casa-de-campo-2?country=SV&'},
-      {name:'Casa del Sol', dept:'La Paz', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/san-luis-la-herradura/casa-del-sol-3?country=SV&'},
-      {name:'Casa del Árbol', dept:'Santa Ana', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/coatepeque/casa-del-arbol-5?country=SV&'},
-      {name:'Estancia Sol Turquesa', dept:'San Salvador', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/san-salvador/estancia-sol-turquesa?country=SV&'},
-      {name:'Finca El Manzano', dept:'Sonsonate', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/juayua/finca-el-manzano?country=SV&'},
-      {name:'Mansión San Blas', dept:'La Libertad', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/la-libertad/mansion-san-blas?country=SV&'},
-      {name:'Ocean Paradise', dept:'Ahuachapán', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/jujutla/ocean-paradise?country=SV&'},
-      {name:'Pedacito de Cielo', dept:'Santa Ana', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/coatepeque/pedacito-de-cielo?country=SV&'},
-      {name:'Rancho Tesoro del Estero', dept:'La Paz', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/san-luis-la-herradura/rancho-tesoro-del-estero?country=SV&'},
-      {name:'Res. Costa del Sol', dept:'La Paz', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/san-luis-la-herradura/res-costa-del-sol?country=SV&'},
-      {name:'Residencia del Sol', dept:'La Paz', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/san-luis-la-herradura/residencia-del-sol?country=SV&'},
-      {name:'Residencia en Santa Clara', dept:'San Vicente', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/santa-clara/residencia-en-santa-clara?country=SV&'},
-      {name:'Rincon de los Alpes', dept:'La Libertad', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/talnique/rincon-de-los-alpes?country=SV&'},
-      {name:'Rincón de las Garzas Lake', dept:'San Salvador', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/ilopango/rincon-de-las-garzas-lake?country=SV&'},
-      {name:'Sihua Surf House', dept:'La Libertad', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/la-libertad/sihua-surf-house?country=SV&'},
-      {name:'Utopia Beach House', dept:'Sonsonate', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/sonsonate/utopia-beach-house?country=SV&'},
-      {name:'Villa Beraca', dept:'La Libertad', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/tamanique/villa-beraca?country=SV&'},
-      {name:'Villa Cerromar', dept:'La Libertad', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/tamanique/villa-cerromar?country=SV&'},
-      {name:'Villa Moderna', dept:'La Libertad', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/la-libertad/villa-moderna-2?country=SV&'},
-      {name:'Villa Palma', dept:'La Paz', video:true, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/san-luis-la-herradura/villa-palma?country=SV&'},
-      {name:'Villamar', dept:'La Paz', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/san-luis-la-herradura/villamar?country=SV&'},
-      {name:'Vista Azul', dept:'La Unión', video:true, link:'https://travelisimo.com/es/country/alojamiento/casas-vacacionales/location/vista-azul'},
-      {name:'Casa Brisa Marina', dept:'La Libertad', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/teotepeque/casa-brisa-marina-3?country=SV&'},
-      {name:'Casa Brisa Tropical', dept:'La Paz', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/san-luis-la-herradura/casa-brisa-tropical?country=SV&'},
-      {name:'Palma Nativa', dept:'La Libertad', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/la-libertad/palma-nativa?country=SV&'},
-      {name:'Risco Azul', dept:'La Libertad', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/la-libertad/risco-azul?country=SV&'},
-      {name:'Finca Alto Boquerón', dept:'La Libertad', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/santa-tecla/finca-alto-boqueron?country=SV&'},
-      {name:'Casa Alto Roger', dept:'Ahuachapán', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/concepcion-de-ataco/casa-alto-roger?country=SV&'},
-      {name:'Casa Solara', dept:'La Paz', video:false, link:'https://travelisimo.com/es/country/alojamiento/casas-vacacionales/location/casa-solara'},
-      {name:'Bella Mar', dept:'La Paz', video:false, link:'https://travelisimo.com/es/country/alojamiento/casas-vacacionales/location/bella-mar'},
-      {name:'Casa Vista Coate', dept:'Santa Ana', video:false, link:'https://travelisimo.com/es/country/alojamiento/casas-vacacionales/location/casa-vista-coate'},
-      {name:'Isla Sol y Mar', dept:'La Paz', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/casas-vacacionales/san-luis-la-herradura/isla-sol-y-mar?country=SV&'},
-      {name:'Loft Urbana A', dept:'San Salvador', video:false, link:'https://travelisimo.com/country/accommodation/vacation-rentals/location/loft-urbana-a'},
-      {name:'Casa Sunset Shalpa', dept:'La Libertad', video:false, link:'https://travelisimo.com/es/country/alojamiento/casas-vacacionales/location/casa-sunset-shalpa'},
-      {name:'Oasis Mar Atami', dept:'La Libertad', video:false, link:'https://travelisimo.com/country/accommodation/vacation-rentals/location/oasis-mar-atami'},
-      {name:'Peña Blanca Sunset', dept:'La Libertad', video:false, link:'https://travelisimo.com/es/country/alojamiento/casas-vacacionales/location/pena-blanca-sunset'},
-      {name:'Casita del Bosque', dept:'Ahuachapán', video:false, link:'https://travelisimo.com/country/accommodation/vacation-rentals/location/casita-del-bosque-3'},
-      {name:'Grand Vista Apartment', dept:'San Salvador', video:false, link:'https://travelisimo.com/es/country/alojamiento/casas-vacacionales/location/grand-vista-apartment'},
-      {name:'Rancho Silonet', dept:'La Libertad', video:false, link:'https://travelisimo.com/es/country/alojamiento/casas-vacacionales/location/rancho-silonet'},
-    ],
-    rev_contenido: [
-      {name:'Vibes Atami 3BR House', dept:'La Libertad'},
-      {name:'Villa mar 27', dept:'La Libertad'},
-      {name:'Lunamar', dept:'La Unión'},
-      {name:'Coco Surf Point Villa', dept:'La Libertad'},
-      {name:'Coco Surf Reef Villa', dept:'La Libertad'},
-      {name:'Loft Urbana B', dept:'San Salvador'},
-    ],
-    rev_info: [
-      {name:'Mariposa Reina A', dept:'La Unión'},
-    ],
+  'Chalatenango': {
+    hotel: {
+      pub: [ {name:'Chalatenango Country', link:h('chalatenango/chalatenango-country')} ],
+      pending: [ {name:'Hotel La Palma'} ],
+    },
+    casa: {
+      pub: [],
+      pending: [ {name:'Monteluna'}, {name:'Puerta Verde Miramundo'} ],
+    },
+    estancia: { pub: [], pending: [] },
   },
-  estancia: {
-    pub: [
-      {name:'Bosque Pacamara Lodge', dept:'Sonsonate', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/estadias-unicas/juayua/bosque-pacamara-lodge?country=SV&'},
-      {name:'Cabaña Canario', dept:'Ahuachapán', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/estadias-unicas/apaneca/cabana-canario?country=SV&'},
-      {name:'Cabaña Clarinero', dept:'Ahuachapán', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/estadias-unicas/apaneca/cabana-clarinero?country=SV&'},
-      {name:'Cabaña Del Bosque', dept:'Sonsonate', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/estadias-unicas/juayua/cabana-del-bosque?country=SV&'},
-      {name:'Cabaña Monte Naranjo', dept:'Sonsonate', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/estadias-unicas/juayua/cabana-monte-naranjo?country=SV&'},
-      {name:'Cabaña Torogoz', dept:'Ahuachapán', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/estadias-unicas/apaneca/cabana-torogoz?country=SV&'},
-      {name:'Glamping Caturra Sky', dept:'Sonsonate', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/estadias-unicas/juayua/glamping-caturra-sky?country=SV&'},
-      {name:'Nido Moka Sky', dept:'Sonsonate', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/estadias-unicas/juayua/nido-moka-sky?country=SV&'},
-      {name:'Domo Aura Verde', dept:'La Libertad', video:false, link:'https://travelisimo.com/es/el-salvador/alojamiento/estadias-unicas/comasagua/domo-aura-verde?country=SV&'},
-    ],
-    rev_contenido: [
-      {name:'Buena Vista Garden - Cabaña', dept:'Sonsonate'},
-      {name:'Buena Vista Garden - Glamping', dept:'Sonsonate'},
-      {name:'Cabaña Chiltota', dept:'Ahuachapán'},
-      {name:'Cabaña Colibrí', dept:'Ahuachapán'},
-      {name:'Cabaña Deluxe', dept:'San Salvador'},
-      {name:'Cabaña Tucán', dept:'Ahuachapán'},
-      {name:'Cardedeu Volcán de San Salvador - Glamping', dept:'San Salvador'},
-      {name:'Domo Deluxe', dept:'Sonsonate'},
-      {name:'Domo Kafen', dept:'Sonsonate'},
-      {name:'Domo Suite', dept:'Sonsonate'},
-      {name:'Nido del Amor II', dept:'Ahuachapán'},
-      {name:'Suite Bubble', dept:'Sonsonate'},
-      {name:'Tiny House', dept:'Sonsonate'},
-    ],
-    rev_info: [
-      {name:'Igloos Campo Bella', dept:'Santa Ana'},
-      {name:'Master Suites', dept:'Santa Ana'},
-      {name:'Nido del Amor I', dept:'Ahuachapán'},
-      {name:'Thermal Paradise Villa', dept:'Sonsonate'},
-    ],
+  'Cuscatlán': {
+    hotel: {
+      pub: [
+        {name:'Casa 1800 Suchitoto', link:h('suchitoto/casa-1800-suchitoto')},
+        {name:'Los Almendros Suchitoto', link:h('suchitoto/los-almendros-suchitoto')},
+      ],
+      pending: [],
+    },
+    casa: { pub: [ {name:'Luna Colonial Suchitoto'} ], pending: [] },
+    estancia: { pub: [], pending: [] },
+  },
+  'La Libertad': {
+    hotel: {
+      pub: [
+        {name:'Hotel Los Farallones', link:h('la-libertad/hotel-los-farallones-2')},
+        {name:'Hotel Pacific Sunrise', link:h('la-libertad/hotel-pacific-sunrise-4')},
+        {name:'Mizata by Antiresort', link:h('teotepeque/mizata-by-antiresort')},
+      ],
+      pending: [ {name:'Papaya Surf'}, {name:'The Beach Break Hotel'}, {name:'Eco Del Mar'} ],
+    },
+    casa: {
+      pub: [
+        {name:'Beach Break Villas', link:c('la-libertad/beach-break-villas')},
+        {name:'Casa Tucán', link:c('la-libertad/casa-tucan')},
+        {name:'Mansión San Blas', link:c('la-libertad/mansion-san-blas')},
+        {name:'Rincon de los Alpes', link:c('talnique/rincon-de-los-alpes')},
+        {name:'Sihua Surf House', link:c('la-libertad/sihua-surf-house')},
+        {name:'Villa Beraca', link:c('tamanique/villa-beraca')},
+        {name:'Villa Cerromar', link:c('tamanique/villa-cerromar')},
+        {name:'Villa Moderna', link:c('la-libertad/villa-moderna-2')},
+        {name:'Casa Brisa Marina', link:c('teotepeque/casa-brisa-marina-3')},
+        {name:'Palma Nativa', link:c('la-libertad/palma-nativa')},
+        {name:'Risco Azul', link:c('la-libertad/risco-azul')},
+        {name:'Finca Alto Boquerón', link:c('santa-tecla/finca-alto-boqueron')},
+        {name:'Casa Sunset Shalpa', link:cgs('casa-sunset-shalpa')},
+        {name:'Oasis Mar Atami', link:cg('oasis-mar-atami')},
+        {name:'Peña Blanca Sunset', link:cgs('pena-blanca-sunset')},
+        {name:'Rancho Silonet', link:cgs('rancho-silonet')},
+        {name:'Altamar Atami Loft'},
+        {name:'Marina Azul San Diego'},
+        {name:'Coco Surf Point Villa'},
+        {name:'Coco Surf Reef Villa'},
+      ],
+      pending: [ {name:'Vibes Atami 3BR House'}, {name:'Villa mar 27'}, {name:'Maité El Zonte - EG'}, {name:'Ávila Nuevo Cuscatlan'} ],
+    },
+    estancia: {
+      pub: [ {name:'Domo Aura Verde', link:e('comasagua/domo-aura-verde')} ],
+      pending: [ {name:'Altura de Comasagua'} ],
+    },
+  },
+  'La Paz': {
+    hotel: {
+      pub: [
+        {name:'Astra Beach Club & Resort', link:h('san-luis-la-herradura/astra-beach-club-and-resort')},
+        {name:'Bahía del Sol', link:h('san-luis-la-herradura/bahia-del-sol')},
+      ],
+      pending: [],
+    },
+    casa: {
+      pub: [
+        {name:'Azul Beach House', link:c('san-luis-la-herradura/azul-beach-house')},
+        {name:'Casa Tropical', link:c('san-luis-la-herradura/casa-tropical-4')},
+        {name:'Casa del Sol', link:c('san-luis-la-herradura/casa-del-sol-3')},
+        {name:'Rancho Tesoro del Estero', link:c('san-luis-la-herradura/rancho-tesoro-del-estero')},
+        {name:'Res. Costa del Sol', link:c('san-luis-la-herradura/res-costa-del-sol')},
+        {name:'Residencia del Sol', link:c('san-luis-la-herradura/residencia-del-sol')},
+        {name:'Villa Palma', link:c('san-luis-la-herradura/villa-palma')},
+        {name:'Villamar', link:c('san-luis-la-herradura/villamar')},
+        {name:'Casa Brisa Tropical', link:c('san-luis-la-herradura/casa-brisa-tropical')},
+        {name:'Casa Solara', link:cgs('casa-solara')},
+        {name:'Bella Mar', link:cgs('bella-mar')},
+        {name:'Isla Sol y Mar', link:c('san-luis-la-herradura/isla-sol-y-mar')},
+        {name:'Marea Mediterránea'},
+      ],
+      pending: [],
+    },
+    estancia: { pub: [], pending: [] },
+  },
+  'La Unión': {
+    hotel: { pub: [], pending: [ {name:'Hotel Casa del Golfo'} ] },
+    casa: {
+      pub: [
+        {name:'Apartamento Frente al Mar'},
+        {name:'Apto. en Playa Las Tunas', link:c('conchagua/apto-en-playa-las-tunas')},
+        {name:'Vista Azul', link:cgs('vista-azul')},
+        {name:'Brisa del Cuco'},
+        {name:'Lunamar'},
+      ],
+      pending: [
+        {name:'Mariposa Monarca A'}, {name:'Mariposa Monarca B'}, {name:'Mariposa Monarca C'},
+        {name:'Mariposa Reina A'}, {name:'Mariposa Reina B'}, {name:'Mariposa Suite Real'},
+        {name:'Palma Blanca El Esterón'},
+      ],
+    },
+    estancia: { pub: [], pending: [] },
+  },
+  'San Miguel': {
+    hotel: {
+      pub: [
+        {name:'Las Flores Surf Resort', link:h('chirilagua/las-flores-surf-resort')},
+        {name:'Vista Las Olas Resort', link:h('chirilagua/vista-las-olas-resort-2')},
+      ],
+      pending: [ {name:'Hotel Villa San Miguel'}, {name:'Paradise Surf Hotel'} ],
+    },
+    casa: {
+      pub: [ {name:'Casa Mira San André'} ],
+      pending: [ {name:'Casa Brisa Oriental'}, {name:'Mayaré El Cuco'}, {name:'Sendero Chaparrastique'} ],
+    },
+    estancia: { pub: [], pending: [] },
+  },
+  'San Salvador': {
+    hotel: {
+      pub: [
+        {name:'Cardedeu Centro', link:h('san-salvador/cardedeu-centro')},
+        {name:'Cardedeu Suites', link:h('san-salvador/cardedeu-suites')},
+        {name:'Hotel Capital', link:h('san-salvador/hotel-capital')},
+        {name:'Hotel Citlalli'},
+        {name:'Hotel Gardenia Inn', link:h('san-salvador/hotel-gardenia-inn')},
+        {name:'Hotel Sueños', link:h('san-salvador/hotel-suenos')},
+        {name:'Hotel Tortuga Village', link:h('san-salvador/hotel-tortuga-village')},
+        {name:'Hotel Árbol de Sueños', link:h('san-salvador/hotel-arbol-de-suenos')},
+        {name:'Villa Terra', link:h('san-salvador/villa-terra')},
+      ],
+      pending: [ {name:'Hotel Diamond'}, {name:'Hotel Mirador Plaza'}, {name:'Villa Antigua'}, {name:'Green Life'} ],
+    },
+    casa: {
+      pub: [
+        {name:'701 Apartamento', link:cg('701-apartamento')},
+        {name:'Estancia Sol Turquesa', link:c('san-salvador/estancia-sol-turquesa')},
+        {name:'Rincón de las Garzas Lake', link:c('ilopango/rincon-de-las-garzas-lake')},
+        {name:'Loft Urbana A', link:cg('loft-urbana-a')},
+        {name:'Grand Vista Apartment', link:cgs('grand-vista-apartment')},
+        {name:'Estudio Urbano Escalón'},
+      ],
+      pending: [ {name:'Loft Urbana B'}, {name:'Atardecer Capital'}, {name:'Horizonte Vista'}, {name:'Tribeca Zona Rosa'} ],
+    },
+    estancia: {
+      pub: [],
+      pending: [ {name:'Cabaña Deluxe'}, {name:'Cardedeu Volcán de San Salvador - Glamping'} ],
+    },
+  },
+  'San Vicente': {
+    hotel: { pub: [], pending: [] },
+    casa: { pub: [ {name:'Residencia en Santa Clara', link:c('santa-clara/residencia-en-santa-clara')} ], pending: [] },
+    estancia: { pub: [], pending: [] },
+  },
+  'Santa Ana': {
+    hotel: {
+      pub: [
+        {name:'Casa 1800 Cerro Verde', link:h('santa-ana/casa-1800-cerro-verde-2')},
+        {name:'Hotel Edificio Kali', link:h('santa-ana/hotel-edificio-kali')},
+        {name:'Hotel Equinoccio', link:h('el-congo/hotel-equinoccio')},
+      ],
+      pending: [ {name:'Lake View House'}, {name:'Remfort Hotel'} ],
+    },
+    casa: {
+      pub: [
+        {name:'Casa Cielo', link:c('santa-ana/casa-cielo-2')},
+        {name:'Casa Wabi', link:c('santa-ana/casa-wabi')},
+        {name:'Casa de Campo', link:c('coatepeque/casa-de-campo-2')},
+        {name:'Casa del Árbol', link:c('coatepeque/casa-del-arbol-5')},
+        {name:'Pedacito de Cielo', link:c('coatepeque/pedacito-de-cielo')},
+        {name:'Casa Vista Coate', link:cgs('casa-vista-coate')},
+      ],
+      pending: [ {name:'Cirene Santa Ana'}, {name:'Horizonte Cirene'}, {name:'Monteverde Metapán'} ],
+    },
+    estancia: { pub: [], pending: [] },
+  },
+  'Sonsonate': {
+    hotel: {
+      pub: [
+        {name:'Hotel Bourbon', link:h('juayua/hotel-bourbon')},
+        {name:'Hotel Nido de Pájaro', link:h('juayua/hotel-nido-de-pajaro')},
+        {name:'Los Cuatro Olivos', link:h('juayua/los-cuatro-olivos')},
+      ],
+      pending: [ {name:'Hotel Las Palmeras'}, {name:'Las Veraneras Resort'} ],
+    },
+    casa: {
+      pub: [
+        {name:'Finca El Manzano', link:c('juayua/finca-el-manzano')},
+        {name:'Utopia Beach House', link:c('sonsonate/utopia-beach-house')},
+      ],
+      pending: [ {name:'Costa Doral Salinitas'} ],
+    },
+    estancia: {
+      pub: [
+        {name:'Bosque Pacamara Lodge', link:e('juayua/bosque-pacamara-lodge')},
+        {name:'Cabaña Del Bosque', link:e('juayua/cabana-del-bosque')},
+        {name:'Cabaña Monte Naranjo', link:e('juayua/cabana-monte-naranjo')},
+        {name:'Glamping Caturra Sky', link:e('juayua/glamping-caturra-sky')},
+        {name:'Nido Moka Sky', link:e('juayua/nido-moka-sky')},
+      ],
+      pending: [
+        {name:'Buena Vista Garden - Cabaña'}, {name:'Buena Vista Garden - Glamping'},
+        {name:'Domo Deluxe'}, {name:'Domo Kafen'}, {name:'Domo Suite'}, {name:'Suite Bubble'},
+        {name:'Bruma de Juayua'},
+      ],
+    },
+  },
+  'Usulután': {
+    hotel: {
+      pub: [ {name:'Hotel Sevilla', link:h('santa-maria/hotel-sevilla-2')} ],
+      pending: [],
+    },
+    casa: {
+      pub: [ {name:'Mango Azul Punta Mango'} ],
+      pending: [ {name:'Rancho Costa Majagua'}, {name:'Rancho Palma El Toro'}, {name:'Treehouse Punta Mango'} ],
+    },
+    estancia: { pub: [], pending: [] },
   },
 };
  
-let openCats = {hotel:true, casa:true, estancia:true};
-let openSubs = {};
+const otherCats = {
+  tours: {
+    label: 'Tours y excursiones', icon: '🗺️',
+    pub: [
+      {name:'Boquerón & Sunset Park', dept:'San Salvador'},
+      {name:'City tour De San Salvador', dept:'San Salvador'},
+      {name:'Conservación de Tortugas', dept:'San Miguel'},
+      {name:'Fernando Llort & El Pital', dept:'Chalatenango'},
+      {name:'Islas del Golfo Tour', dept:'San Salvador'},
+      {name:'La Ruta De Las Flores', dept:'Sonsonate'},
+      {name:'La Ruta de la Paz', dept:'San Salvador'},
+      {name:'Manglares y Kayak', dept:'San Miguel'},
+      {name:'Nahuizalco & Apaneca', dept:'San Salvador'},
+      {name:'Parque Acuático', dept:'La Libertad'},
+      {name:'Piedra De Comasagua', dept:'San Salvador'},
+      {name:'Playa Costa del Sol', dept:'San Salvador'},
+      {name:'Playa la Libertad', dept:'San Salvador'},
+      {name:'Ruta de las Flores Tour', dept:'Sonsonate'},
+      {name:'San Salvador Highlights', dept:'San Salvador'},
+      {name:'San Salvador y Boquerón', dept:'San Salvador'},
+      {name:'Tamanique & El Tunco', dept:'San Salvador'},
+      {name:'Tour Del Ron Cihuatán', dept:'San Salvador'},
+      {name:'Tour Por El Museo Tesak', dept:'San Salvador'},
+      {name:'Tour a Cinquera', dept:'San Salvador'},
+      {name:'Tour de Ruinas y Volcanes', dept:'San Salvador'},
+      {name:'Tour en Puerta del Diablo', dept:'San Salvador'},
+      {name:'Tour por Jiquilisco', dept:'San Salvador'},
+      {name:'Tour por Joya De Cerén', dept:'San Salvador'},
+      {name:'Tour volcán Santa Ana', dept:'San Salvador'},
+      {name:'Volcán Izalco Hike', dept:'San Salvador'},
+    ],
+    pending: [ {name:'Tour al Parque Imposible', dept:'San Salvador'} ],
+  },
+  paquetes: {
+    label: 'Paquetes turísticos', icon: '🎁',
+    pub: [
+      {name:'Aventura Premium', dept:'La Paz'},
+      {name:'Bienestar y cultura', dept:'La Libertad'},
+      {name:'El Salvador Ancestral', dept:'San Salvador'},
+      {name:'El Salvador Express', dept:'San Salvador'},
+      {name:'Familiar 5 Días', dept:'San Salvador'},
+      {name:'Glamping & Estrellas', dept:'San Salvador'},
+      {name:'Playa, Parque y Volcán', dept:'Santa Ana'},
+      {name:'Romance en el Golfo', dept:'La Paz'},
+      {name:'San Salvador City & Surf', dept:'San Salvador'},
+      {name:'Signature El Salvador', dept:'San Salvador'},
+    ],
+    pending: [ {name:'Inmersión Total al Surf'} ],
+  },
+};
  
-function filterByDept(arr, dept) {
-  if (dept === 'all') return arr;
-  return arr.filter(p => p.dept === dept);
+// Populate department select
+const deptSelect = document.getElementById('dept-select');
+Object.keys(data).forEach(dept => {
+  const opt = document.createElement('option');
+  opt.value = dept; opt.textContent = dept;
+  deptSelect.appendChild(opt);
+});
+ 
+let openCats = {hotel:true, casa:true, estancia:true};
+ 
+function catTotals(catKey) {
+  let pub = 0, pend = 0;
+  Object.keys(data).forEach(dept => {
+    pub += data[dept][catKey].pub.length;
+    pend += data[dept][catKey].pending.length;
+  });
+  return {pub, pend, total: pub+pend};
 }
  
 function render() {
-  const dept = document.getElementById('dept-select').value;
-  let totalPub = 0, totalRev = 0;
+  const selected = document.getElementById('dept-select').value;
+  let totalPub = 0, totalPend = 0;
  
   cats.forEach(c => {
-    const pub = filterByDept(data[c.key].pub, dept);
-    const rc = filterByDept(data[c.key].rev_contenido, dept);
-    const ri = filterByDept(data[c.key].rev_info, dept);
-    totalPub += pub.length;
-    totalRev += rc.length + ri.length;
+    const t = catTotals(c.key);
+    totalPub += t.pub; totalPend += t.pend;
   });
+  Object.values(otherCats).forEach(o => { totalPub += o.pub.length; totalPend += o.pending.length; });
  
-  document.getElementById('m-total').textContent = totalPub + totalRev;
+  document.getElementById('m-total').textContent = totalPub + totalPend;
   document.getElementById('m-pub').textContent = totalPub;
-  document.getElementById('m-rev').textContent = totalRev;
+  document.getElementById('m-rev').textContent = totalPend;
  
-  const container = document.getElementById('cat-container');
+  // Categories (Hoteles, Casas, Estancias), grouped by department inside
+  const container = document.getElementById('dept-container');
   container.innerHTML = '';
- 
   cats.forEach(c => {
-    const pub = filterByDept(data[c.key].pub, dept);
-    const rc = filterByDept(data[c.key].rev_contenido, dept);
-    const ri = filterByDept(data[c.key].rev_info, dept);
-    const total = pub.length + rc.length + ri.length;
-    if (total === 0 && dept !== 'all') return;
+    // Filter by selected department
+    const depts = Object.keys(data).filter(dept => {
+      if (selected !== 'all' && selected !== dept) return false;
+      const pub = data[dept][c.key].pub;
+      const pend = data[dept][c.key].pending;
+      return (pub.length + pend.length) > 0;
+    });
+    if (depts.length === 0) return;
  
-    const pA = total > 0 ? Math.round((pub.length / total) * 100) : 0;
-    const pP = total > 0 ? 100 - pA : 0;
+    let catPub = 0, catPend = 0;
+    depts.forEach(dept => {
+      catPub += data[dept][c.key].pub.length;
+      catPend += data[dept][c.key].pending.length;
+    });
+ 
     const isOpen = openCats[c.key];
  
     const sec = document.createElement('div');
-    sec.className = 'cat-section';
- 
+    sec.className = 'dept-section';
     sec.innerHTML = `
-      <div class="cat-header-bar ${isOpen ? '' : 'collapsed'}" onclick="toggleCat('${c.key}')">
-        <div class="cat-title">${c.icon} ${c.label}</div>
-        <div class="cat-counts">
-          <span class="pill pill-pub">${pub.length} publicados</span>
-          <span class="pill" style="background:#E3F2FD;color:#1565C0;">${pub.filter(p=>p.video).length} 🎬</span>
-          <span class="pill pill-rev">${rc.length + ri.length} en revisión</span>
+      <div class="dept-header-bar ${isOpen ? '' : 'collapsed'}" onclick="toggleCat('${c.key}')">
+        <div class="dept-title">${c.icon} ${c.label}</div>
+        <div class="dept-counts">
+          <span class="pill pill-pub">${catPub} publicados</span>
+          <span class="pill pill-rev">${catPend} pend.</span>
           <span class="chevron ${isOpen ? 'open' : ''}">▾</span>
         </div>
       </div>
-      ${isOpen ? `
-      <div class="cat-body">
-        <div class="bar-row">
-          <div class="bar-wrap">
-            ${pub.length > 0 ? `<div class="seg seg-active" style="width:${pA}%">${pA > 10 ? pub.length : ''}</div>` : ''}
-            ${(rc.length+ri.length) > 0 ? `<div class="seg seg-pending" style="width:${pP}%">${pP > 10 ? rc.length+ri.length : ''}</div>` : ''}
-          </div>
-        </div>
- 
-        ${pub.length > 0 ? `
-        <div class="sub-section">
-          <div class="sub-header" onclick="toggleSub('${c.key}_pub')">
-            <div class="sub-title">✅ Publicados (${pub.length})</div>
-            <span class="chevron ${openSubs[c.key+'_pub'] !== false ? 'open' : ''}">▾</span>
-          </div>
-          ${openSubs[c.key+'_pub'] !== false ? `
-          <div class="sub-body">
-            <div class="prop-grid">${pub.map(p=> p.link 
-              ? `<a href="${p.link}" target="_blank" class="prop-tag prop-pub" style="text-decoration:none;">${p.video ? '🎬' : '📷'} ${p.name}${dept==='all'?` <span style="font-size:10px;opacity:0.7;">· ${p.dept}</span>`:''}</a>`
-              : `<div class="prop-tag prop-pub" style="opacity:0.7;">${p.video ? '🎬' : '📷'} ${p.name}${dept==='all'?` <span style="font-size:10px;opacity:0.7;">· ${p.dept}</span>`:''}</div>`
-            ).join('')}</div>
-          </div>` : ''}
-        </div>` : ''}
- 
-        ${rc.length > 0 ? `
-        <div class="sub-section">
-          <div class="sub-header" onclick="toggleSub('${c.key}_rc')">
-            <div class="sub-title">📸 Pendientes de contenido (${rc.length})</div>
-            <span class="chevron ${openSubs[c.key+'_rc'] !== false ? 'open' : ''}">▾</span>
-          </div>
-          ${openSubs[c.key+'_rc'] !== false ? `
-          <div class="sub-body">
-            <div class="prop-grid">${rc.map(p=>`<div class="prop-tag prop-cont">⏳ ${p.name}${dept==='all'?` <span style="font-size:10px;opacity:0.7;">· ${p.dept}</span>`:''}</div>`).join('')}</div>
-          </div>` : ''}
-        </div>` : ''}
- 
-        ${ri.length > 0 ? `
-        <div class="sub-section">
-          <div class="sub-header" onclick="toggleSub('${c.key}_ri')">
-            <div class="sub-title">📋 Pendientes de información / subir (${ri.length})</div>
-            <span class="chevron ${openSubs[c.key+'_ri'] !== false ? 'open' : ''}">▾</span>
-          </div>
-          ${openSubs[c.key+'_ri'] !== false ? `
-          <div class="sub-body">
-            <div class="prop-grid">${ri.map(p=>`<div class="prop-tag prop-info">📋 ${p.name}${dept==='all'?` <span style="font-size:10px;opacity:0.7;">· ${p.dept}</span>`:''}</div>`).join('')}</div>
-          </div>` : ''}
-        </div>` : ''}
- 
+      ${isOpen ? `<div class="dept-body">
+        ${depts.map(dept => {
+          const pub = data[dept][c.key].pub;
+          const pend = data[dept][c.key].pending;
+          return `
+          <div class="cat-block">
+            <div class="cat-block-title">📍 ${dept} <span style="color:#bbb;font-weight:400;">(${pub.length} pub. · ${pend.length} pend.)</span></div>
+            ${pub.length ? `<div class="sub-row-title">✅ Publicados</div><div class="prop-grid">${pub.map(p => p.link
+              ? `<a href="${p.link}" target="_blank" class="prop-tag prop-pub" style="text-decoration:none;">${p.name}</a>`
+              : `<div class="prop-tag prop-pub" style="opacity:0.7;">${p.name}</div>`
+            ).join('')}</div>` : ''}
+            ${pend.length ? `<div class="sub-row-title">⏳ Pendientes de contenido</div><div class="prop-grid">${pend.map(p => `<div class="prop-tag prop-cont">${p.name}</div>`).join('')}</div>` : ''}
+          </div>`;
+        }).join('')}
       </div>` : ''}
     `;
     container.appendChild(sec);
+  });
+ 
+  // Other categories (Tours, Paquetes) - always full, not filtered by department
+  const otherContainer = document.getElementById('other-container');
+  otherContainer.innerHTML = '';
+  Object.values(otherCats).forEach(o => {
+    const sec = document.createElement('div');
+    sec.className = 'flat-section';
+    sec.innerHTML = `
+      <div class="flat-title">
+        <div>${o.icon} ${o.label}</div>
+        <div class="dept-counts">
+          <span class="pill pill-pub">${o.pub.length} publicados</span>
+          <span class="pill pill-rev">${o.pending.length} pend.</span>
+        </div>
+      </div>
+      ${o.pub.length ? `<div class="sub-row-title">✅ Publicados</div><div class="prop-grid">${o.pub.map(p => `<div class="prop-tag prop-pub" style="opacity:0.85;">${p.name}${p.dept ? ` <span style="font-size:10px;opacity:0.7;">· ${p.dept}</span>` : ''}</div>`).join('')}</div>` : ''}
+      ${o.pending.length ? `<div class="sub-row-title">⏳ Pendientes de contenido</div><div class="prop-grid">${o.pending.map(p => `<div class="prop-tag prop-cont">${p.name}${p.dept ? ` <span style="font-size:10px;opacity:0.7;">· ${p.dept}</span>` : ''}</div>`).join('')}</div>` : ''}
+    `;
+    otherContainer.appendChild(sec);
   });
 }
  
 function toggleCat(key) {
   openCats[key] = !openCats[key];
-  render();
-}
- 
-function toggleSub(key) {
-  openSubs[key] = openSubs[key] === false ? true : false;
   render();
 }
  
